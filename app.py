@@ -35,14 +35,18 @@ class Movie(db.Model):
 # 主页
 @app.route('/')
 def index():
-    user = User.query.first()
     movies = Movie.query.all()
-    return render_template('index.html',name=user,movies=movies)
+    return render_template('index.html',movies=movies)
 
 # 用户页面
 @app.route('/user/<name>')
 def user_page(name):
     return f'User: {escape(name)}' # 转义处理
+
+@app.context_processor
+def inject_user():
+    user = User.query.first()
+    return dict(user=user)
 
 @app.route('/test')
 def test_url_for():
@@ -51,6 +55,10 @@ def test_url_for():
     print(url_for('test_url_for'))
     print(url_for('test_url_for',num=2))
     return 'Test page'
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'),404 # 返回模板和状态码
 
 @app.cli.command() # 注册为命令
 @click.option('--drop',is_flag=True,help='Create after drop.') # 设置选项
