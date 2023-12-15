@@ -11,14 +11,9 @@ if WIN:  # 如果是 Windows 系统，使用三个斜线
 else:  # 否则使用四个斜线
     prefix = 'sqlite:////'
 
-# MySQL数据库配置
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:182015@localhost:3306/movie_list?charset=utf8mb4'
-
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'dev'
-# 注意更新这里的路径，把 app.root_path 添加到 os.path.dirname() 中
-# 以便把文件定位到项目根目录
-app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(os.path.dirname(app.root_path), 'data.db')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev')
+app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(os.path.dirname(app.root_path), os.getenv('DATABASE_FILE', 'data.db'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
